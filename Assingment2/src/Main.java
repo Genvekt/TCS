@@ -8,18 +8,13 @@ import java.util.*;
 
 public class Main {
     static String error_main = "";
-    static Map<String,Integer> warnings;
     static FSA fsa;
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        warnings = new HashMap<String,Integer>();
         fsa = new FSA();
         initFSA("fsa.txt");
         report();
-
-        String[] commands = {"turn_on","turn_on","turn_off","turn_on"};
-        System.out.println(fsa.isAccepted(commands));
 
     }
 
@@ -37,9 +32,6 @@ public class Main {
             //Initialise reader and error/warnings list
             Scanner in = new Scanner(new File(initFile));
 
-            warnings.put("W1",0);
-            warnings.put("W2",0);
-            warnings.put("W3",0);
 
             while(in.hasNextLine()){
                 String line = in.nextLine();
@@ -103,18 +95,15 @@ public class Main {
             }
 
             //set final states
-            if(finalStates.contains("")){
-                warnings.replace("W1",1);
-            }
-            else {
-                for (String state : finalStates) {
+
+            for (String state : finalStates) {
                     error = fsa.addFinal(state);
                     if (error == -1) {
                         error_main = "E1: A state '"+state+"' is not in set of states";
                         return -1;
                     }
-                }
             }
+
 
             //fill fsa with  transitions
             for (String transition:transitions){
@@ -134,7 +123,8 @@ public class Main {
                         return -1;
                     }
                     if(error == -3){
-                        warnings.replace("W3",1);
+                        error_main = "E6: FSA is nondeterministic";
+                        return -1;
                     }
                 }
                 else{
@@ -145,8 +135,8 @@ public class Main {
 
             if(fsa.isDisjoint()){
                 error_main = "E2: Some states are disjoint";
-        }
-            warnings.replace("W2",fsa.isAllStatesReacheble());
+            }
+
 
         return 0;
     }
@@ -171,28 +161,10 @@ public class Main {
             out.print("Error:");
             out.print("\n"+error_main);
         }
-        //else check completeness and output all warnings
-        else{
-            warnings_dscrptn.put("W1","W1: Accepting state is not defined");
-            warnings_dscrptn.put("W2","W2: Some states are not reachable from initial state");
-            warnings_dscrptn.put("W3","W3: FSA is nondeterministic");
-
-            out.print("FSA is ");
-            if(fsa.isComplete()){
-                out.print("complete");
-            }else out.print("incomplete");
-
-            if(warnings.containsValue(1)) {
-                out.print("\nWarning:");
-                for (String key : warnings.keySet()) {
-                    if (warnings.get(key) == 1) {
-                        out.print("\n"+warnings_dscrptn.get(key));
-                    }
-                }
-            }
-        }
+        else out.print(fsa.toRegularExp());
         out.close();
     }
+
 }
 
 

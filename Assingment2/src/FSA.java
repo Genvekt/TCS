@@ -71,15 +71,19 @@ class FSA {
      *         0 otherwise
      */
     public int addTransition(String state1, String alpha, String state2){
+        //if there is no state1 in states
         if(!states.containsKey(state1)){
             return -1;
         }
+        //if there is no state2 in states
         if(!states.containsKey(state2)){
             return -11;
         }
+        //if there is no alpa in alphabet
         if(!alphabet.contains(alpha)){
             return -2;
         }
+        //if transition with this name already exists
         if(states.get(state1).transitions_out.containsKey(alpha) && !states.get(state1).transitions_out.get(alpha).name.equals(states.get(state2).name)){
             return -3;
         }
@@ -157,6 +161,10 @@ class FSA {
             return true;
         }
         else return false;
+    }
+
+    public String toRegularExp(){
+        return(" I working on it)");
     }
 
 
